@@ -40,6 +40,15 @@ def authenticate_okta():
     pass
 
 # Google Workspace group operations
+def get_google_groups(service):
+    try:
+        results = service.groups().list(customer='my_customer', maxResults=200).execute()
+        groups = results.get('groups', [])
+        return [{ "name": group['name'], "email": group['email'] } for group in groups]
+    except Exception as e:
+        print(f"Failed to retrieve Google groups: {e}")
+        return []
+
 def create_google_group(service, group_name, email):
     group = {
         "name": group_name,
@@ -58,6 +67,16 @@ def delete_google_group(service, group_key):
 
 
 # Okta group operations
+def get_okta_groups():
+    url = f"{OKTA_DOMAIN}/api/v1/groups"
+    try:
+        response = requests.get(url, headers=headers)
+        groups = response.json()
+        return [{ "name": group['profile']['name'], "id": group['id'] } for group in groups]
+    except Exception as e:
+        print(f"Failed to retrieve Okta groups: {e}")
+        return []
+
 def create_okta_group(group_name, description):
     url = f"{OKTA_DOMAIN}/api/v1/groups"
     payload = {
