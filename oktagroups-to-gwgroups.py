@@ -106,14 +106,15 @@ def delete_okta_group(group_id):
 
 def sync_groups():
     google_service = authenticate_google()
-    # google_service is used within this function to interact with Google's API
-    
-    # okta_client = authenticate_okta() 
-    # okta_client is used within this function to interact with Okta's API
-    
-    google_groups = get_google_groups()
+    google_groups = get_google_groups(google_service)
     okta_groups = get_okta_groups()
     
+    # logic for identifying groups to create in Okta
+    for g_group in google_groups:
+        if g_group['name'] not found in [o_group['name'] for o_group in okta_groups]:
+            # This group needs to be created in Okta
+            create_okta_group(g_group['name'], "Synchronized from Google Workspace")
+
     # Compare groups and determine actions
     
 if __name__ == "__main__":
